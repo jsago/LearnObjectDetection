@@ -8,6 +8,10 @@
 >
 >[知乎：如何评价 Kaiming He 最新的 Mask R-CNN?](<https://www.zhihu.com/question/57403701>)
 >
+>[实例分割--Mask RCNN详解](<https://blog.csdn.net/qinghuaci666/article/details/80900882>)
+>
+>[B站视频：Mask R-CNN 深度解读与源码解析](<https://www.bilibili.com/video/av24795835?from=search&seid=5700274980241297444>)
+>
 >论文：
 >
 >《[Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)》
@@ -35,7 +39,9 @@ ResNet-FPN+Fast RCNN+mask
 3. ROI Align层的加入
 4. 添加并列的FCN层，即Mask层
 
+![1555935647640](assets/1555935647640.png)
 
+![1555936775532](assets/1555936775532.png)
 
 ### FPN
 
@@ -67,7 +73,23 @@ FPN结构中包括自下而上，自上而下和横向连接三个部分
 
 融合之后还要采用3*3卷积对融合特征进行处理，目的是消除混叠
 
+
+
+> **上图少绘制了一个分支**：M5经过步长为2的max pooling下采样得到 P6，作者指出使用P6是想得到更大的anchor尺度512×512。但P6是只用在 RPN中用来得到region proposal的，并不会作为后续Fast RCNN的输入。
+>
+> ResNet-FPN作为RPN输入的feature map是P2~P6 ，而作为后续Fast RCNN的输入则是P2~P5
+
+根据经验公式来决定不同尺度的ROI要从哪个$P_k​$来切
+
+![img](https://pic1.zhimg.com/80/v2-939a0ce072c0d8a2c4423d88b54c2680_hd.jpg)
+
+大尺度的ROI要从低分辨率的feature map上切，有利于检测大目标，小尺度的ROI要从高分辨率的feature map上切，有利于检测小目标
+
+
+
 ### Mask分支
+
+[FCN](<https://zhuanlan.zhihu.com/p/22976342>)
 
 与FasterRCNN相比，Mask-RCNN多了一个分支；Mask-RCNN将RCNN拓展到语义分割领域
 
@@ -82,5 +104,71 @@ Mask-RCNN的实现是FCN网络，掩码分支实际就是一个卷积网络，�
 
 
 
+![img](https://img-blog.csdn.net/20181017170531183?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dhbmdkb25nd2VpMA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+
+
 Mask RCNN定义多任务损失：$L=L_{cls}+L_{box}+L_{mask}​$
+
+
+
+### ROI Align
+
+Faster RCNN 中采用的是ROI pooling 特征图和原始图并不是对准的，misalignment
+
+1. 双线性插值：本质是在两个方向做线性插值
+
+![img](https://pic4.zhimg.com/80/v2-d5504827dd6c3cc170cc12185a812407_hd.jpg)
+
+虚线表示feature map；实线表示ROI；这里将ROI分成2*2的单元格
+
+如果采样点是4，那么首先将每个单元格分成4块，每块的中心点就是采样点
+
+对每个采样点就行双线性插值，得到采样点处的值；
+
+然后对每个单元格中的4个采样点进行maxpooling
+
+![img](https://pic1.zhimg.com/80/v2-76b8a15c735d560f73718581de34249c_hd.jpg)
+
+### 损失函数
+
+$$ L=L_{cls}+L_{box}+L_{mask}$$
+
+损失函数 = 分类损失+检测损失+分割损失
+
+假设一共有K个类别，则mask分割分支的输出维度是 $K*m*m$ , 对于 中$m*m​$的每个点，都会输出K个二值Mask（每个类别使用sigmoid输出）
+
+> 计算loss的时候，并不是每个类别的sigmoid输出都计算二值交叉熵损失，而是该像素属于哪个类，哪个类的sigmoid输出才要计算损失(如图红色方形所示)
+>
+> 并且在测试的时候，我们是通过分类分支预测的类别来选择相应的mask预测。这样，mask预测和分类预测就彻底解耦了
+>
+> 通过对每个 Class 对应一个 Mask 可以有效避免类间竞争
+
+![img](https://pic1.zhimg.com/80/v2-a12e9c005947651ac7e78be12938a3f4_hd.jpg)
+
+
+
+## 源码阅读
+
+> B站视频
+>
+> [[matterport]/**Mask_RCNN**](<https://github.com/matterport/Mask_RCNN>): Keras + Tensorflow实现
+>
+> [maskrcnn-benchmark](<https://github.com/facebookresearch/maskrcnn-benchmark>): pytorch 1.0 ， 包含faster rcnn
+
+
+
+学习mask rcnn loss的计算
+
+
+
+## 拓展 Mask Scoring R-CNN
+
+![img](https://img-blog.csdnimg.cn/20190316204634627.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDk1NTI1NA==,size_16,color_FFFFFF,t_70)
+
+
+
+[Mask Scoring R-CNN](<https://blog.csdn.net/weixin_40955254/article/details/88605164>)
+
+[CVPR2019:Mask Scoring R-CNN](<https://zhuanlan.zhihu.com/p/58291808>)
 
