@@ -108,9 +108,7 @@ Mask-RCNN的实现是FCN网络，掩码分支实际就是一个卷积网络，�
 
 
 
-Mask RCNN定义多任务损失：$L=L_{cls}+L_{box}+L_{mask}​$
-
-
+Mask RCNN定义多任务损失：$L=L_{cls}+L_{box}+L_{mask}$
 
 ### ROI Align
 
@@ -158,7 +156,171 @@ $$ L=L_{cls}+L_{box}+L_{mask}$$
 
 
 
-学习mask rcnn loss的计算
+1. 学习mask rcnn loss的计算
+
+网络结构包括：
+
++ backbone
++ rpn
++ ROIheads:  包括roi_box_head，roi_mask_head， roi_keypoint_head
+
+
+
+
+
+mask score只在正例上计算；
+
+mask rcnn 创建targets需要labels和masks
+
+
+
+每一个类别分支都有对应的m*m mask
+
+分割误差为新的东西，对于每一个ROI，mask分支定义一个K*m*2维的矩阵表示K个不同的分类对于每一个m*m的区域，对于每一个类都有一个。对于每一个像素，都是用sigmod函数进行求相对熵，得到平均相对熵误差Lmask。对于每一个ROI，如果检测得到ROI属于哪一个分类，就只使用哪一个分支的相对熵误差作为误差值进行计算
+
+二值交叉熵
+
+`F.binary_cross_entropy_with_logits`
+
+![img](https://img-blog.csdn.net/20180705122838141?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FpbmdodWFjaTY2Ng==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+![img](https://img-blog.csdn.net/20170614225609072)
+
+
+
+
+
+roi——mask_predictor
+
+```python
+# 调用
+self.loss_evaluator = make_roi_mask_loss_evaluator(cfg)
+loss_mask = self.loss_evaluator(proposals, mask_logits, targets)
+
+# mask loss计算类
+class MaskRCNNLossComputation(object):
+    def __init__(self, proposal_matcher, discretization_size):
+        """
+        Arguments:
+            proposal_matcher (Matcher): 
+            	包括前景iou阈值、背景iou阈值，附加low-quality matches
+            discretization_size (int)：
+            	离散尺寸，分辨率？
+        """
+        self.proposal_matcher = proposal_matcher
+        self.discretization_size = discretization_size
+
+    def match_targets_to_proposals(self, proposal, target):
+        # 为每个proposal分配targets
+        
+        match_quality_matrix = boxlist_iou(target, proposal)
+        matched_idxs = self.proposal_matcher(match_quality_matrix)
+        # Mask RCNN needs "labels" and "masks "fields for creating the targets
+        target = target.copy_with_fields(["labels", "masks"])
+        # get the targets corresponding GT for each proposal
+        # NB: need to clamp the indices because we can have a single
+        # GT in the image, and matched_idxs can be -2, which goes
+        # out of bounds
+        matched_targets = target[matched_idxs.clamp(min=0)]
+        matched_targets.add_field("matched_idxs", matched_idxs)
+        return matched_targets
+
+    def prepare_targets(self, proposals, targets):
+        #
+        
+        
+        labels = []
+        masks = []
+        
+        for proposals_per_image, targets_per_image in zip(proposals, targets):
+            # 为proposal分配targets
+            matched_targets = self.match_targets_to_proposals(
+                proposals_per_image, targets_per_image
+            )
+            matched_idxs = matched_targets.get_field("matched_idxs")
+
+            labels_per_image = matched_targets.get_field("labels")
+            labels_per_image = labels_per_image.to(dtype=torch.int64)
+
+            # this can probably be removed, but is left here for clarity
+            # and completeness
+            
+            neg_inds = matched_idxs == Matcher.BELOW_LOW_THRESHOLD
+            labels_per_image[neg_inds] = 0
+
+            # mask scores are only computed on positive samples
+            positive_inds = torch.nonzero(labels_per_image > 0).squeeze(1)
+
+            segmentation_masks = matched_targets.get_field("masks")
+            segmentation_masks = segmentation_masks[positive_inds]
+
+            positive_proposals = proposals_per_image[positive_inds]
+
+            masks_per_image = project_masks_on_boxes(
+                segmentation_masks, positive_proposals, self.discretization_size
+            )
+
+            labels.append(labels_per_image)
+            masks.append(masks_per_image)
+
+        return labels, masks
+
+    def __call__(self, proposals, mask_logits, targets):
+        """
+        Arguments:
+            proposals (list[BoxList])
+            mask_logits (Tensor)
+            targets (list[BoxList])
+
+        Return:
+            mask_loss (Tensor): scalar tensor containing the loss
+        """
+        labels, mask_targets = self.prepare_targets(proposals, targets)
+
+        labels = cat(labels, dim=0)
+        mask_targets = cat(mask_targets, dim=0)
+
+        positive_inds = torch.nonzero(labels > 0).squeeze(1)
+        labels_pos = labels[positive_inds]
+
+        # torch.mean (in binary_cross_entropy_with_logits) doesn't
+        # accept empty tensors, so handle it separately
+        if mask_targets.numel() == 0:
+            return mask_logits.sum() * 0
+
+        mask_loss = F.binary_cross_entropy_with_logits(
+            mask_logits[positive_inds, labels_pos], mask_targets
+        )
+        return mask_loss
+
+
+    
+# mask loss 评价器
+def make_roi_mask_loss_evaluator(cfg):
+    matcher = Matcher(
+        cfg.MODEL.ROI_HEADS.FG_IOU_THRESHOLD,
+        cfg.MODEL.ROI_HEADS.BG_IOU_THRESHOLD,
+        allow_low_quality_matches=False,
+    )
+
+    loss_evaluator = MaskRCNNLossComputation(
+        matcher, cfg.MODEL.ROI_MASK_HEAD.RESOLUTION
+    )
+
+    return loss_evaluator
+```
+
+
+
+
+
+
+
+2. 使用Retinanet
+
+代码路径：`/maskrcnn_benchmark/modeling/rpn/retinanet`
+
+
 
 
 

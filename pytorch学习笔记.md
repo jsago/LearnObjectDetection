@@ -374,3 +374,6 @@ contiguous：view只能用在contiguous的variable上。如果在view之前用�
 有些tensor并不是占用一整块内存，而是由不同的数据块组成，而tensor的view()操作依赖于内存是整块的，这时只需要执行contiguous()这个函数，把tensor变成在内存中连续分布的形式。 
 
 判断是否contiguous用torch.Tensor.is_contiguous()函数。
+
+## 11. detach
+
