@@ -4,7 +4,7 @@
 
 ## 基础篇
 
-1. [Python学习笔记](https://github.com/QQJayden/LearnObjectDetection/blob/master/Python %26 Pytorch %26 常见工具/Python学习笔记.md)
+1. [Python学习笔记](https://github.com/QQJayden/LearnObjectDetection/blob/master/Python%20%26%20Pytorch%20%26%20%E5%B8%B8%E8%A7%81%E5%B7%A5%E5%85%B7/Python%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.md)
 2. [Python tqdm可视化](https://github.com/QQJayden/LearnObjectDetection/blob/master/Python%20%26%20Pytorch%20%26%20%E5%B8%B8%E8%A7%81%E5%B7%A5%E5%85%B7/Python%E2%80%94tqdm%E5%8F%AF%E8%A7%86%E5%8C%96.md)
 3. [Pytorch学习笔记](https://github.com/QQJayden/LearnObjectDetection/blob/master/Python%20%26%20Pytorch%20%26%20%E5%B8%B8%E8%A7%81%E5%B7%A5%E5%85%B7/pytorch%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0.md)
 4. [Linux常见命令](https://github.com/QQJayden/LearnObjectDetection/blob/master/Python%20%26%20Pytorch%20%26%20%E5%B8%B8%E8%A7%81%E5%B7%A5%E5%85%B7/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4.md)
