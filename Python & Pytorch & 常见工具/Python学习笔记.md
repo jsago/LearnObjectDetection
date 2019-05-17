@@ -30,3 +30,9 @@
 [(1, 2, 3), (4, 5, 6)]
 ```
 
+## 4. format与%
+
+[基础_格式化输出（%用法和format用法）](https://www.cnblogs.com/fat39/p/7159881.html)
+
+[python中使用%与.format格式化文本](https://www.cnblogs.com/engeng/p/6605936.html)
+
