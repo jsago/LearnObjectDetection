@@ -36,3 +36,8 @@
 
 [python中使用%与.format格式化文本](https://www.cnblogs.com/engeng/p/6605936.html)
 
+
+
+## 5. Python 直接赋值、浅拷贝和深度拷贝解析
+
+[Python拷贝](<https://www.runoob.com/w3cnote/python-understanding-dict-copy-shallow-or-deep.html>)

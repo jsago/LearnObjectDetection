@@ -151,6 +151,10 @@ def soft_nms(box_scores, score_threshold, sigma=0.5, top_k=-1):
 
 ![ç¾åº¦è§è§å¢éæ©è· ECCV Google AI ç®æ æ£æµç"èµå åï¼è·å¥æ¹æ¡å¨è§£è¯" |  ECCV 2018](assets/5b9a2938206d2.jpg)
 
+
+
+![1560863784319](assets/1560863784319.png)
+
 ### 图像增强+NMS
 
 水平翻转或者旋转等等
