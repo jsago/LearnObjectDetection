@@ -14,11 +14,81 @@
 >
 > [从编程实现角度学习Faster R-CNN（附极简实现）](<https://zhuanlan.zhihu.com/p/32404424>)
 >
+> [数万字长文(Resnet)Faster-R-CNN复现](<https://zhuanlan.zhihu.com/p/75004045>)
+>
+> [【技术综述】万字长文详解Faster RCNN源代码（一）](<https://zhuanlan.zhihu.com/p/51012194>)
+>
+> [Object Detection and Classification using R-CNNs](<http://www.telesens.co/2018/03/11/object-detection-and-classification-using-r-cnns/>)
+>
 > 
 >
 > 论文：《Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks》
 
 ---
+
+## Faster RCNN基本流程
+
+### 图像预处理
+
+![img](assets/img_5aa46e9e0bbd7.png)
+
+设置了短边目标长度以及长边的最大长度
+
+### 网络结构
+
+R-CNNs通常由三种类型的网络组成：
+
++ Head
++ RPN
++ 分类网络
+
+ResNet初始化：
+
+```python
+n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+m.weight.data.normal_(0, math.sqrt(2. / n))
+```
+
+![img](assets/img_5a9ffec911c19.png)
+
+### 训练细节
+
+![img](assets/img_5aa0053323ac5.png)
+
+#### Anchor Generation Layer
+
+![img](assets/img_5aa05d3ecef3e.png)
+
+#### Region Proposal Network
+
+![img](assets/img_5aa0695484e3e.png)
+
+#### Proposal Layer
+
+![img](assets/img_5aa5766d53b63.png)
+
+#### Anchor Target Layer
+
++ 区分前背景
++ 为前景框生成好的边框回归系数
+
+#### 计算RPN Loss
+
+$RPN Loss = \text{Classification Loss} + \text{Bounding Box Regression Loss}$
+
+
+
+...待续
+
+
+
+
+
+
+
+
+
+
 
 ## Faster RCNN 细节
 
