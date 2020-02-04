@@ -11,3 +11,19 @@
 > [聊聊Anchor的"前世今生"（上）](<https://zhuanlan.zhihu.com/p/63273342>)
 >
 > [聊聊Anchor的"前世今生"（下）](<https://zhuanlan.zhihu.com/p/68291859>)
+
+
+
+
+
+## CenterNet
+
+> 论文：
+>
+> 《CenterNet: Keypoint Triplets for Object Detection》
+>
+> 《Object as Points》
+>
+> 博客：
+>
+> [CVPR 2019 Object as Points（CenterNet）](<https://zhuanlan.zhihu.com/p/104152762>)
