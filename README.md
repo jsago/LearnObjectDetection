@@ -24,3 +24,11 @@
 6. [目标检测之RetinaNet](https://github.com/QQJayden/LearnObjectDetection/blob/master/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B9%8BRetinaNet.md)
 7. [目标检测之CornerNet](https://github.com/QQJayden/LearnObjectDetection/blob/master/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B9%8BCornerNet.md)
 
+## 关键点检测
+
+0. 人体关键点综述
+1. 人脸关键点综述
+
+## 轻量化模型设计
+
+0. 常见轻量化模型
