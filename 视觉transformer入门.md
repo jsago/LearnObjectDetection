@@ -8,13 +8,17 @@
 >
 >教程：
 >
->[李宏毅-Transformer](https://www.bilibili.com/video/av56239558/)
+>[李宏毅-Transformer](https://www.bilibili.com/video/av56239558/)（安利~）
 >
 >[3W字长文带你轻松入门视觉transformer](https://zhuanlan.zhihu.com/p/308301901)
 >
 >[详解Transformer （Attention Is All You Need）](https://zhuanlan.zhihu.com/p/48508221)
 >
 >[The Illustrated Transformer](http://jalammar.github.io/illustrated-transformer/)
+
+
+
+
 
 ## 简述
 
@@ -106,11 +110,11 @@ seq2seq with self attention
 
 ## 视觉Transformer-ViT
 
-
+待补充。。。
 
 ## Swin-Transformer
 
-
+待补充。。。
 
 
 
